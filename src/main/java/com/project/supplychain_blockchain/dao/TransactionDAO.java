@@ -61,4 +61,10 @@ public class TransactionDAO {
         String sql = "SELECT * FROM transactions WHERE product_id = ? ORDER BY created_at";
         return jdbcTemplate.query(sql, new Object[]{productId}, new BeanPropertyRowMapper<>(Transaction.class));
     }
+
+    public List<Transaction> getTransactions() {
+        String sql = "SELECT * FROM transactions ORDER BY created_at";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Transaction.class));
+    }
+
 }

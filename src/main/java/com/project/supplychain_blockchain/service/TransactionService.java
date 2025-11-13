@@ -32,4 +32,10 @@ public class TransactionService {
     public List<Transaction> getProductHistory(int productId) {
         return transactionDAO.getTransactionsForProduct(productId);
     }
+
+    public List<Transaction> getTransactions(){
+        return transactionDAO.getTransactions();
+    }
+
+
 }

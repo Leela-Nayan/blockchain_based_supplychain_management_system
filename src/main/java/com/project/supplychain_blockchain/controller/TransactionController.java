@@ -14,6 +14,8 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
+
+
     @PostMapping("/add")
     public String addTxn(@RequestBody Transaction t) {
         int id = transactionService.createTransaction(t);
@@ -23,5 +25,10 @@ public class TransactionController {
     @GetMapping("/history/{productId}")
     public List<Transaction> history(@PathVariable int productId) {
         return transactionService.getProductHistory(productId);
+    }
+
+    @GetMapping("/all")
+    public List<Transaction> getAllTransactions() {
+        return transactionService.getTransactions();
     }
 }

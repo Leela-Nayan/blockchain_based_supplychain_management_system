@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Blockchain Supply Chain Management</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header>
+    <h1>Blockchain-based Supply Chain Management System</h1>
+    <nav>
+        <button data-view="dashboard">Dashboard</button>
+        <button data-view="products">Products</button>
+        <button data-view="batches">Batches</button>
+        <button data-view="shipments">Shipments</button>
+        <button data-view="warehouses">Warehouses</button>
+        <button data-view="transactions">Transactions</button>
+        <button data-view="blockchain">Blockchain</button>
+        <button data-view="reports">Reports</button>
+    </nav>
+</header>
+
+<main>
+    <!-- Dashboard -->
+    <section id="view-dashboard" class="view">
+        <h2>Dashboard</h2>
+        <div class="card-row">
+            <div class="card">
+                <h3>Create Product</h3>
+                <form id="form-create-product">
+                    <input name="name" placeholder="Product name" required minlength="2" />
+                    <input name="description" placeholder="Description" maxlength="255" />
+                    <input name="manufacturerId" placeholder="Manufacturer ID" type="number" required min="1" />
+                    <button type="submit">Create Product</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Create User</h3>
+                <form id="form-create-user">
+                    <input name="name" placeholder="Full name" required minlength="3" />
+                    <input name="email" placeholder="Email" type="email" required />
+                    <input name="roleId" placeholder="Role ID" type="number" required min="1" />
+                    <button type="submit">Create User</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products -->
+    <section id="view-products" class="view hidden">
+        <h2>Products</h2>
+        <button id="btn-refresh-products">Refresh</button>
+        <table id="tbl-products" class="data-table">
+            <thead><tr><th>ID</th><th>Name</th><th>Description</th><th>Manufacturer</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <!-- Batches -->
+    <section id="view-batches" class="view hidden">
+        <h2>Product Batches</h2>
+        <form id="form-create-batch">
+            <select id="batch-product-select" required></select>
+            <input name="manufacture_date" type="date" required />
+            <input name="expiry_date" type="date" />
+            <input name="quantity" type="number" placeholder="Quantity" required min="1" />
+            <button type="submit">Create Batch</button>
+        </form>
+        <button id="btn-refresh-batches">Refresh</button>
+        <table id="tbl-batches" class="data-table">
+            <thead><tr><th>Batch ID</th><th>Product</th><th>Manufacture</th><th>Expiry</th><th>Quantity</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <!-- Shipments -->
+    <section id="view-shipments" class="view hidden">
+        <h2>Shipments</h2>
+        <form id="form-create-shipment">
+            <select id="shipment-batch-select" required></select>
+            <select id="shipment-warehouse-select" required></select>
+            <input name="dispatch_date" type="date" required />
+            <input name="delivery_date" type="date" />
+            <select name="status" required>
+                <option value="Pending">Pending</option>
+                <option value="In Transit">In Transit</option>
+                <option value="Delivered">Delivered</option>
+            </select>
+            <button type="submit">Create Shipment</button>
+        </form>
+        <button id="btn-refresh-shipments">Refresh</button>
+        <table id="tbl-shipments" class="data-table">
+            <thead><tr><th>ID</th><th>Batch</th><th>Warehouse</th><th>Dispatch</th><th>Delivery</th><th>Status</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <!-- Warehouses -->
+    <section id="view-warehouses" class="view hidden">
+        <h2>Warehouses</h2>
+        <form id="form-create-warehouse">
+            <input name="location" placeholder="Location" required minlength="2" />
+            <input name="capacity" type="number" placeholder="Capacity" required min="1" />
+            <button type="submit">Add Warehouse</button>
+        </form>
+        <button id="btn-refresh-warehouses">Refresh</button>
+        <table id="tbl-warehouses" class="data-table">
+            <thead><tr><th>ID</th><th>Location</th><th>Capacity</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <!-- Transactions -->
+    <section id="view-transactions" class="view hidden">
+        <h2>Transactions</h2>
+        <form id="form-create-transaction">
+            <select id="txn-product-select" required></select>
+            <input name="sender_id" type="number" placeholder="Sender ID" required min="1" />
+            <input name="receiver_id" type="number" placeholder="Receiver ID" required min="1" />
+            <input name="details" placeholder="Details" maxlength="255" />
+            <button type="submit">Create Transaction</button>
+        </form>
+        <button id="btn-refresh-transactions">Refresh</button>
+        <table id="tbl-transactions" class="data-table">
+            <thead><tr><th>ID</th><th>Product</th><th>Sender</th><th>Receiver</th><th>Details</th><th>Created</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <!-- Blockchain -->
+    <section id="view-blockchain" class="view hidden">
+        <h2>Blockchain Trace</h2>
+        <input id="trace-product-id" placeholder="Product ID or Tx ID" />
+        <button id="btn-get-trace">Get Trace</button>
+        <pre id="blockchain-output"></pre>
+    </section>
+
+    <!-- Reports -->
+    <section id="view-reports" class="view hidden">
+        <h2>Reports</h2>
+        <button id="btn-report-shipments-monthly">Shipments (monthly)</button>
+        <button id="btn-report-top-products">Top Products</button>
+        <button id="btn-report-warehouse-util">Warehouse Utilization</button>
+        <div id="report-output"></div>
+    </section>
+</main>
+
+<footer>
+    <small>© 2025 Blockchain Supply Chain System</small>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
