@@ -6,19 +6,29 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class LoginCredentialsDAO {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public void addCredentials(LoginCredentials lc) {
-        String sql = "INSERT INTO login_credentials (user_id, username, password_hash) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, lc.getUserId(), lc.getUsername(), lc.getPasswordHash());
+    public int addUser(LoginCredentials user) {
+        String sql = "INSERT INTO users (name, email, password, role_id) VALUES (?, ?, ?, ?)";
+        return jdbcTemplate.update(sql,
+                user.getName(),
+                user.getEmail(),
+                user.getPassword(),  // store raw password
+                user.getRoleId());
     }
 
-    public LoginCredentials findByUsername(String username) {
-        String sql = "SELECT * FROM login_credentials WHERE username = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{username}, new BeanPropertyRowMapper<>(LoginCredentials.class));
+    public LoginCredentials findByEmail(String email) {
+        String sql = "SELECT user_id AS userId, name, email, password, role_id AS roleId FROM users WHERE email = ?";
+        List<LoginCredentials> list = jdbcTemplate.query(sql,
+                new Object[]{email},
+                new BeanPropertyRowMapper<>(LoginCredentials.class));
+
+        return list.isEmpty() ? null : list.get(0);
     }
 }

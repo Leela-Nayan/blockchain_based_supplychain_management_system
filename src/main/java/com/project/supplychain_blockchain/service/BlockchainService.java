@@ -14,16 +14,37 @@ public class BlockchainService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    /**
-     * Create a block for a transaction and persist block metadata in DB.
-     * @param txnId the transaction id this block represents
-     * @param data human-readable transaction fingerprint
-     * @return created Block
-     */
     public Block addBlockForTransaction(int txnId, String data) {
+
+        System.out.println("---- BLOCKCHAIN DEBUG ----");
+        System.out.println("Creating block for txnId: " + txnId);
+        System.out.println("Data: " + data);
+
         Block block = blockchain.addBlock(data);
+
+        System.out.println("Block created:");
+        System.out.println("  index = " + block.getIndex());
+        System.out.println("  hash  = " + block.getHash());
+        System.out.println("  prev  = " + block.getPrevHash());
+
         String sql = "INSERT INTO blockchain (txn_id, block_index, hash, prev_hash, data) VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, txnId, block.getIndex(), block.getHash(), block.getPrevHash(), block.getData());
+
+        try {
+            jdbcTemplate.update(sql,
+                    txnId,
+                    block.getIndex(),
+                    block.getHash(),
+                    block.getPrevHash(),
+                    block.getData()
+            );
+
+            System.out.println("BLOCKCHAIN INSERT SUCCESS!");
+
+        } catch (Exception e) {
+            System.out.println("❌ BLOCKCHAIN INSERT FAILED ❌");
+            e.printStackTrace();
+        }
+
         return block;
     }
 

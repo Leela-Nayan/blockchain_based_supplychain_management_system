@@ -3,24 +3,35 @@ package com.project.supplychain_blockchain.controller;
 import com.project.supplychain_blockchain.model.LoginCredentials;
 import com.project.supplychain_blockchain.service.LoginCredentialService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/login")
+@RequestMapping("/api")
 public class LoginController {
 
     @Autowired
-    private LoginCredentialService loginService;
+    private LoginCredentialService credentialService;
 
-    @PostMapping("/register")
-    public String register(@RequestBody LoginCredentials lc) {
-        loginService.registerCredentials(lc);
-        return "User credentials registered!";
+    @PostMapping("/users/add")
+    public ResponseEntity<?> registerUser(@RequestBody LoginCredentials user) {
+        try {
+            int newId = credentialService.registerUser(user);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body("{\"userId\": " + newId + "}");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("{\"error\": \"" + e.getMessage() + "\"}");
+        }
     }
 
-    @PostMapping("/validate")
-    public String validate(@RequestBody LoginCredentials lc) {
-        boolean valid = loginService.validateLogin(lc.getUsername(), lc.getPasswordHash());
-        return valid ? "Login successful!" : "Invalid credentials!";
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginCredentials payload) {
+        LoginCredentials user = credentialService.authenticate(payload.getEmail(), payload.getPassword());
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("{\"error\": \"Invalid email or password\"}");
+        return ResponseEntity.ok(user);
     }
 }

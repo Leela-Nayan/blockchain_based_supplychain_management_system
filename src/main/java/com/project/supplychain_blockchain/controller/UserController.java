@@ -1,8 +1,9 @@
 package com.project.supplychain_blockchain.controller;
 
-import com.project.supplychain_blockchain.model.User;
-import com.project.supplychain_blockchain.service.UserService;
+import com.project.supplychain_blockchain.dao.UserDAO;
+import com.project.supplychain_blockchain.model.LoginCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,21 +13,18 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserService userService;
-
-    @PostMapping("/add")
-    public String addUser(@RequestBody User user) {
-        userService.addUser(user);
-        return "User added";
-    }
+    private UserDAO userDAO;
 
     @GetMapping("/all")
-    public List<User> getAll() {
-        return userService.getAllUsers();
+    public List<LoginCredentials> getAllUsers() {
+        return userDAO.getAllUsers();
     }
 
-    @GetMapping("/{id}")
-    public User getById(@PathVariable int id) {
-        return userService.getUserById(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable int id) {
+        int rows = userDAO.deleteUser(id);
+        if (rows > 0)
+            return ResponseEntity.ok("{\"status\":\"deleted\"}");
+        return ResponseEntity.status(404).body("{\"error\":\"User not found\"}");
     }
 }

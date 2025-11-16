@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Manufacturer Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<script src="auth.js"></script>
+<script>
+    // Only manufacturers allowed
+    if (!requireAuth([2])) return;
+</script>
+
+<header>
+    <h2>Manufacturer Dashboard</h2>
+    <button onclick="doLogout()">Logout</button>
+</header>
+
+<main class="card-row">
+
+    <!-- Create Product -->
+    <section class="card">
+        <h3>Create Product</h3>
+        <input id="prod-name" placeholder="Product Name">
+        <textarea id="prod-desc" placeholder="Description"></textarea>
+        <button onclick="createProduct()">Create Product</button>
+    </section>
+
+    <!-- Create Batch -->
+    <section class="card">
+        <h3>Create Batch</h3>
+        <select id="batch-product"></select>
+        <input type="date" id="batch-mfg">
+        <input type="date" id="batch-exp">
+        <input type="number" id="batch-qty" placeholder="Quantity">
+        <button onclick="createBatch()">Create Batch</button>
+    </section>
+
+</main>
+
+<hr>
+
+<main class="card-row">
+
+    <!-- List products -->
+    <section class="card" style="width:48%">
+        <h3>Products</h3>
+        <div id="products-list">Loading...</div>
+    </section>
+
+    <!-- List batches -->
+    <section class="card" style="width:48%">
+        <h3>Batches</h3>
+        <div id="batches-list">Loading...</div>
+    </section>
+
+</main>
+
+<hr>
+
+<!-- Shipments -->
+<section class="card" style="margin:20px;">
+    <h3>Create Shipment</h3>
+    <select id="ship-batch"></select>
+    <select id="ship-warehouse"></select>
+    <input type="date" id="ship-date">
+    <button onclick="createShipment()">Create Shipment</button>
+</section>
+
+<section class="card" style="margin:20px;">
+    <h3>Your Shipments</h3>
+    <div id="shipments-list">Loading...</div>
+</section>
+
+
+<script src="api.js"></script>
+<script src="auth.js"></script>
+<script src="manufacturer.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Retailer Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<script src="auth.js"></script>
+<script>
+    if (!requireAuth([4])) return;
+</script>
+
+<header>
+    <h2>Retailer Dashboard</h2>
+    <button onclick="doLogout()">Logout</button>
+</header>
+
+<main>
+
+    <section class="card" style="margin:20px;">
+        <h3>Shipments Awaiting Delivery</h3>
+        <div id="incoming-list">Loading...</div>
+    </section>
+
+    <section class="card" style="margin:20px;">
+        <h3>All Shipments</h3>
+        <div id="all-shipments-list">Loading...</div>
+    </section>
+
+</main>
+
+<script src="api.js"></script>
+<script src="retailer.js"></script>
+
+</body>
+</html>

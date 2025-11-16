@@ -11,21 +11,40 @@ public class LoginCredentialService {
     @Autowired
     private LoginCredentialsDAO loginCredentialsDAO;
 
-    public void registerCredentials(LoginCredentials lc) {
-        // You can later add password hashing logic here
-        loginCredentialsDAO.addCredentials(lc);
+    public int registerUser(LoginCredentials user) {
+        if (user.getEmail() == null || user.getEmail().isBlank())
+            throw new IllegalArgumentException("Email is required");
+
+        if (user.getPassword() == null || user.getPassword().isBlank())
+            throw new IllegalArgumentException("Password is required");
+
+        LoginCredentials existing = loginCredentialsDAO.findByEmail(user.getEmail());
+        if (existing != null)
+            throw new IllegalArgumentException("Email already registered");
+
+        // Store plain password
+        return loginCredentialsDAO.addUser(user);
     }
 
-    public LoginCredentials getByUsername(String username) {
-        return loginCredentialsDAO.findByUsername(username);
-    }
+    public LoginCredentials authenticate(String email, String rawPassword) {
 
-    public boolean validateLogin(String username, String passwordHash) {
-        try {
-            LoginCredentials lc = loginCredentialsDAO.findByUsername(username);
-            return lc.getPasswordHash().equals(passwordHash);
-        } catch (Exception e) {
-            return false;
+        if (email == null || rawPassword == null) {
+            return null;
         }
+
+        // Get user from DB
+        LoginCredentials user = loginCredentialsDAO.findByEmail(email);
+        if (user == null) {
+            return null;
+        }
+
+        // Compare raw passwords directly
+        if (!rawPassword.equals(user.getPassword())) {
+            return null;
+        }
+
+        // Remove password before returning
+        user.setPassword(null);
+        return user;
     }
 }

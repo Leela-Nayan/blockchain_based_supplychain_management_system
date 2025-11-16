@@ -1,9 +1,12 @@
+SET TIME ZONE 'Asia/Kolkata';
+
 -- USERS TABLE
 CREATE TABLE IF NOT EXISTS users (
                                      user_id SERIAL PRIMARY KEY,
                                      name VARCHAR(100) NOT NULL,
                                      email VARCHAR(150) UNIQUE NOT NULL,
-                                     role_id INT
+                                     password VARCHAR(255) NOT NULL,
+                                     role_id INT REFERENCES roles(role_id)
 );
 
 -- ROLES TABLE
@@ -56,7 +59,7 @@ CREATE TABLE IF NOT EXISTS transactions (
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- BLOCKCHAIN TABLE (metadata for each transaction)
+-- BLOCKCHAIN TABLE
 CREATE TABLE IF NOT EXISTS blockchain (
                                           block_id SERIAL PRIMARY KEY,
                                           txn_id INT REFERENCES transactions(txn_id),
@@ -65,4 +68,13 @@ CREATE TABLE IF NOT EXISTS blockchain (
                                           prev_hash VARCHAR(128) NOT NULL,
                                           data TEXT,
                                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- AUDIT LOG TABLE
+CREATE TABLE IF NOT EXISTS audit_log (
+                                         log_id SERIAL PRIMARY KEY,
+                                         event_type VARCHAR(100) NOT NULL,
+                                         user_id INT REFERENCES users(user_id),
+                                         timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                         details TEXT
 );

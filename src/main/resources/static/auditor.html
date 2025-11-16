@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Auditor Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<script src="auth.js"></script>
+<script>
+    if (!requireAuth([5])) return;
+</script>
+
+<header>
+    <h2>Auditor Dashboard</h2>
+    <button onclick="doLogout()">Logout</button>
+</header>
+
+<main style="margin:20px;">
+
+    <section class="card">
+        <h3>Audit Logs</h3>
+
+        <input id="search-box" placeholder="Search logs..." oninput="filterLogs()"
+               style="width: 300px; margin-bottom: 10px;" />
+
+        <div id="audit-logs">Loading...</div>
+    </section>
+
+</main>
+
+<script src="api.js"></script>
+<script src="auditor.js"></script>
+
+</body>
+</html>
