@@ -5,7 +5,6 @@ import com.project.supplychain_blockchain.dao.ShipmentDAO;
 import com.project.supplychain_blockchain.dao.TransactionDAO;
 import com.project.supplychain_blockchain.model.Shipment;
 import com.project.supplychain_blockchain.model.Transaction;
-import com.project.supplychain_blockchain.blockchain.Block;
 import com.project.supplychain_blockchain.service.BlockchainService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,8 +68,8 @@ public class ShipmentController {
                 ? ((Number) payload.get("userId")).intValue()
                 : null;
 
-        // find batch_id for this shipment
-        Integer batchId = null;
+        // Find batch_id for this shipment
+        Integer batchId;
         try {
             batchId = jdbcTemplate.queryForObject(
                     "SELECT batch_id FROM shipments WHERE shipment_id = ?",
@@ -81,15 +80,16 @@ public class ShipmentController {
             return ResponseEntity.status(404).body("{\"error\":\"Shipment not found\"}");
         }
 
-        // update status
+        // Update status
         int rows = shipmentDAO.markReceived(id);
         if (rows <= 0)
             return ResponseEntity.status(404).body("{\"error\":\"Shipment not updated\"}");
 
+        // Log audit
         String details = "Shipment " + id + " marked RECEIVED";
         auditLogDAO.logEvent("ShipmentReceived", userId, details);
 
-        // find product for blockchain + transaction
+        // Find product ID (for blockchain)
         Integer productId = null;
         try {
             productId = jdbcTemplate.queryForObject(
@@ -99,15 +99,16 @@ public class ShipmentController {
             );
         } catch (Exception ignored) {}
 
-        // create transaction
+        // Create transaction
         Transaction tx = new Transaction();
         tx.setProductId(productId);
-        tx.setSenderId(null);     // manufacturer/distributor logic simplified
+        tx.setSenderId(null);
         tx.setReceiverId(userId);
         tx.setDetails(details);
 
         int txnId = transactionDAO.addTransaction(tx);
 
+        // Add blockchain block
         if (txnId > 0) {
             blockchainService.addBlockForTransaction(txnId, details);
         }
@@ -128,7 +129,8 @@ public class ShipmentController {
                 ? ((Number) payload.get("userId")).intValue()
                 : null;
 
-        Integer batchId = null;
+        // Find batch_id
+        Integer batchId;
         try {
             batchId = jdbcTemplate.queryForObject(
                     "SELECT batch_id FROM shipments WHERE shipment_id = ?",
@@ -139,13 +141,16 @@ public class ShipmentController {
             return ResponseEntity.status(404).body("{\"error\":\"Shipment not found\"}");
         }
 
+        // Update status
         int rows = shipmentDAO.markDelivered(id);
         if (rows <= 0)
             return ResponseEntity.status(404).body("{\"error\":\"Shipment not updated\"}");
 
+        // Log audit
         String details = "Shipment " + id + " marked DELIVERED";
         auditLogDAO.logEvent("ShipmentDelivered", userId, details);
 
+        // Find product ID
         Integer productId = null;
         try {
             productId = jdbcTemplate.queryForObject(
@@ -155,6 +160,7 @@ public class ShipmentController {
             );
         } catch (Exception ignored) {}
 
+        // Create transaction
         Transaction tx = new Transaction();
         tx.setProductId(productId);
         tx.setSenderId(null);
@@ -163,10 +169,12 @@ public class ShipmentController {
 
         int txnId = transactionDAO.addTransaction(tx);
 
+        // Add blockchain block
         if (txnId > 0) {
             blockchainService.addBlockForTransaction(txnId, details);
         }
 
         return ResponseEntity.ok("{\"result\":\"ok\"}");
     }
+
 }
